@@ -3,22 +3,22 @@
 
 #include "shape.h"
 
-namespace Geometry {
+namespace Shape {
 
     class Sphere : public Shape {
 
-        Vec<3> center;
+        Geometry::Vec<3> center;
         float_max_t radius;
 
     public:
-        Sphere (const Vec<3> &_center, float_max_t _radius) :
+        Sphere (const Geometry::Vec<3> &_center, float_max_t _radius) :
             center(_center), radius(_radius) {}
 
-        inline const Vec<3> &getCenter (void) const { return this->center; }
+        inline const Geometry::Vec<3> &getCenter (void) const { return this->center; }
         inline float_max_t getRadius (void) const { return this->radius; }
 
-        inline void setCenter (const Vec<3> &_center) { this->center = _center; }
-        inline void setRadius (const Vec<3> &_radius) { this->radius = _radius; }
+        inline void setCenter (const Geometry::Vec<3> &_center) { this->center = _center; }
+        inline void setRadius (const Geometry::Vec<3> &_radius) { this->radius = _radius; }
 
         inline bool fit (void) const override { return true; }
 
@@ -28,9 +28,9 @@ namespace Geometry {
 
         inline Shape *clone (void) const override { return new Sphere(this->getCenter(), this->getRadius()); }
 
-        Vec<2> param(const Vec<3> &point) const;
+        Geometry::Vec<2> param(const Geometry::Vec<3> &point) const;
 
-        bool intersectLine (const Line &line, Vec<3> &normal_min, Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals = true) const override;
+        bool intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals = true) const override;
 
     };
 

@@ -1,6 +1,6 @@
 #include "transformed_shape.h"
 
-namespace Geometry {
+namespace Shape {
 
     constexpr std::array<float_max_t, 16> TransformedShape::identity;
 
@@ -134,7 +134,7 @@ namespace Geometry {
                     not_identity = true;
                     break;
                 }
-            } else if (closeToZero(i)) {
+            } else if (Geometry::closeToZero(i)) {
                 not_identity = true;
                 break;
             }
@@ -176,7 +176,7 @@ namespace Geometry {
         }
     }
 
-    void TransformedShape::rotate (const Quaternion &quat) {
+    void TransformedShape::rotate (const Geometry::Quaternion &quat) {
         if (!quat.isIdentity()) {
             this->multiplyMatrix(quat.rotation());
         }
@@ -201,9 +201,9 @@ namespace Geometry {
         return new TransformedShape(bound, this->getPivot(), this->getMatrix(), this->getMatrixInverse(), this->getMatrixInverseTransposed());
     }
 
-    bool TransformedShape::intersectLine (const Line &line, Vec<3> &normal_min, Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
-        static Line transf_line;
-        transf_line = Line(line.getPoint().transformed(this->getMatrixInverse(), this->getPivot()), line.getDirection().transformedNormal(this->getMatrixInverse()));
+    bool TransformedShape::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+        static Geometry::Line transf_line;
+        transf_line = Geometry::Line(line.getPoint().transformed(this->getMatrixInverse(), this->getPivot()), line.getDirection().transformedNormal(this->getMatrixInverse()));
         if (this->getShape()->intersectLine(transf_line, normal_min, normal_max, t_min, t_max, fix_normals)) {
             normal_min.transform(this->getMatrixInverseTransposed());
             normal_max.transform(this->getMatrixInverseTransposed());

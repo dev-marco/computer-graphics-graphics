@@ -1,10 +1,10 @@
 #include "csg_tree.h"
 
-namespace Geometry {
+namespace Shape {
 
-    bool CSGTree::intersectLine (const Line &line, Vec<3> &normal_min, Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+    bool CSGTree::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
         unsigned min_index, max_index;
-        Vec<3> shapes_normal[4];
+        Geometry::Vec<3> shapes_normal[4];
         float_max_t shapes_inter[4];
         bool shapes_result[2], global_result = false;
         shapes_result[0] = this->getFirst()->intersectLine(line, shapes_normal[0], shapes_normal[2], shapes_inter[0], shapes_inter[2], fix_normals);

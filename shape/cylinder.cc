@@ -1,24 +1,24 @@
-#include "../intersection.h"
+#include "../geometry/intersection.h"
 #include "cylinder.h"
 
-namespace Geometry {
+namespace Shape {
 
-    Vec<2> Cylinder::param (const Vec<3> &point) const {
-        const Vec<3> diff = point - this->getBottom();
-        return { std::atan2(diff[1], diff[0]) / TWO_PI, diff[2] / this->getHeight() };
+    Geometry::Vec<2> Cylinder::param (const Geometry::Vec<3> &point) const {
+        const Geometry::Vec<3> diff = point - this->getBottom();
+        return { std::atan2(diff[1], diff[0]) / Geometry::TWO_PI, diff[2] / this->getHeight() };
     }
 
-    bool Cylinder::intersectLine (const Line &line, Vec<3> &normal_min, Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+    bool Cylinder::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
 
         bool is_t_min_top_cap, is_t_min_bottom_cap, is_t_max_top_cap, is_t_max_bottom_cap;
 
-        if (Intersection::Line::Cylinder(
+        if (Geometry::Intersection::Line::Cylinder(
             line.getPoint(), line.getDirection(),
             this->getBottom(), this->getTop(), this->getRadius(),
             t_min, is_t_min_top_cap, is_t_min_bottom_cap,
             t_max, is_t_max_top_cap, is_t_max_bottom_cap
         )) {
-            static Vec<3> direction, delta;
+            static Geometry::Vec<3> direction, delta;
             direction = this->getDirection();
 
             this->param(line.at(t_min));

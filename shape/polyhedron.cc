@@ -1,14 +1,14 @@
-#include "../intersection.h"
+#include "../geometry/intersection.h"
 #include "polyhedron.h"
 
-namespace Geometry {
+namespace Shape {
 
-    bool Polyhedron::intersectLine (const Line &line, Vec<3> &normal_min, Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+    bool Polyhedron::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
 
         unsigned face_min, face_max;
-        const std::vector<Plane> &planes = this->getPlanes();
+        const std::vector<Geometry::Plane> &planes = this->getPlanes();
 
-        if (Intersection::Line::Polyhedron(
+        if (Geometry::Intersection::Line::Polyhedron(
             line.getPoint(), line.getDirection(),
             planes,
             t_min, face_min, t_max, face_max

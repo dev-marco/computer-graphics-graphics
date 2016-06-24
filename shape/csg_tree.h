@@ -3,7 +3,7 @@
 
 #include "shape.h"
 
-namespace Geometry {
+namespace Shape {
 
     class CSGTree : public Shape {
 
@@ -37,7 +37,7 @@ namespace Geometry {
 
         inline Shape *clone (void) const override { return new CSGTree(this->getFirst(), this->getOperation(), this->getSecond()); }
 
-        bool intersectLine (const Line &line, Vec<3> &normal_min, Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const override;
+        bool intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const override;
 
     };
 
