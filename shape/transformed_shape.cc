@@ -154,6 +154,16 @@ namespace Shape {
         }
     }
 
+    void TransformedShape::setShape (const Shape *_shape) {
+        if (this->shape) {
+            delete this->shape;
+            this->shape = nullptr;
+        }
+        if (_shape) {
+            this->shape = _shape->clone();
+        }
+    }
+
     void TransformedShape::scale (float_max_t sx, float_max_t sy, float_max_t sz) {
         if (sx != 1.0 || sy != 1.0 || sz != 1.0) {
             this->multiplyMatrix({
@@ -182,13 +192,13 @@ namespace Shape {
         }
     }
 
-    void TransformedShape::translate (float_max_t tx, float_max_t ty, float_max_t tz) {
-        if (tx != 0.0 || ty != 0.0 || tz != 0.0) {
+    void TransformedShape::translate (const Geometry::Vec<3> &vec) {
+        if (vec) {
             this->multiplyMatrix({
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                 tx,  ty,  tz, 1.0
+                1.0,       0.0,    0.0, 0.0,
+                0.0,       1.0,    0.0, 0.0,
+                0.0,       0.0,    1.0, 0.0,
+                vec[0], vec[1], vec[2], 1.0
             });
         }
     }
@@ -198,13 +208,23 @@ namespace Shape {
         if (bound == this->getShape()) {
             return this;
         }
-        return new TransformedShape(bound, this->getPivot(), this->getMatrix(), this->getMatrixInverse(), this->getMatrixInverseTransposed());
+        return new TransformedShape(
+            bound, this->getPivot(),
+            this->getTexture(), this->getSurface(),
+            this->getMatrix(), this->getMatrixInverse(), this->getMatrixInverseTransposed());
     }
 
-    bool TransformedShape::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+    bool TransformedShape::intersectLine (
+        const Geometry::Line &line,
+        Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+        Pigment::Color &color_min, Pigment::Color &color_max,
+        Light::Material &material_min, Light::Material &material_max,
+        float_max_t &t_min, float_max_t &t_max,
+        bool fix_normals
+    ) const {
         static Geometry::Line transf_line;
         transf_line = Geometry::Line(line.getPoint().transformed(this->getMatrixInverse(), this->getPivot()), line.getDirection().transformedNormal(this->getMatrixInverse()));
-        if (this->getShape()->intersectLine(transf_line, normal_min, normal_max, t_min, t_max, fix_normals)) {
+        if (this->getShape()->intersectLine(transf_line, normal_min, normal_max, color_min, color_max, material_min, material_max, t_min, t_max, fix_normals)) {
             normal_min.transform(this->getMatrixInverseTransposed());
             normal_max.transform(this->getMatrixInverseTransposed());
             return true;

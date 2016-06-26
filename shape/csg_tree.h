@@ -1,5 +1,5 @@
-#ifndef MODULE_GRAPHICS_GEOMETRY_CSG_TREE_H_
-#define MODULE_GRAPHICS_GEOMETRY_CSG_TREE_H_
+#ifndef MODULE_GRAPHICS_SHAPE_CSG_TREE_H_
+#define MODULE_GRAPHICS_SHAPE_CSG_TREE_H_
 
 #include "shape.h"
 
@@ -22,8 +22,8 @@ namespace Shape {
 
     public:
 
-        constexpr CSGTree (Shape *_first, Type _operation, Shape *_second) :
-            first(_first), second(_second), operation(_operation) {}
+        constexpr CSGTree (Shape *_first, Type _operation, Shape *_second, Pigment::Texture *_texture = nullptr, Light::Surface *_surface = nullptr) :
+            Shape(_texture, _surface), first(_first), second(_second), operation(_operation) {}
 
         inline Shape *getFirst (void) const { return this->first; }
         inline Shape *getSecond (void) const { return this->second; }
@@ -35,9 +35,16 @@ namespace Shape {
 
         inline const char *getType (void) const override { return "csg_tree"; }
 
-        inline Shape *clone (void) const override { return new CSGTree(this->getFirst(), this->getOperation(), this->getSecond()); }
+        inline Shape *clone (void) const override { return new CSGTree(this->getFirst(), this->getOperation(), this->getSecond(), this->getTexture(), this->getSurface()); }
 
-        bool intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const override;
+        bool intersectLine (
+            const Geometry::Line &line,
+            Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+            Pigment::Color &color_min, Pigment::Color &color_max,
+            Light::Material &material_min, Light::Material &material_max,
+            float_max_t &t_min, float_max_t &t_max,
+            bool fix_normals = true
+        ) const override;
 
     };
 

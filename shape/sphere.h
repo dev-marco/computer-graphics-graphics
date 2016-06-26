@@ -1,5 +1,5 @@
-#ifndef MODULE_GRAPHICS_GEOMETRY_SPHERE_H_
-#define MODULE_GRAPHICS_GEOMETRY_SPHERE_H_
+#ifndef MODULE_GRAPHICS_SHAPE_SPHERE_H_
+#define MODULE_GRAPHICS_SHAPE_SPHERE_H_
 
 #include "shape.h"
 
@@ -11,8 +11,8 @@ namespace Shape {
         float_max_t radius;
 
     public:
-        Sphere (const Geometry::Vec<3> &_center, float_max_t _radius) :
-            center(_center), radius(_radius) {}
+        Sphere (const Geometry::Vec<3> &_center, float_max_t _radius, Pigment::Texture *_texture, Light::Surface *_surface) :
+            Shape(_texture, _surface), center(_center), radius(_radius) {}
 
         inline const Geometry::Vec<3> &getCenter (void) const { return this->center; }
         inline float_max_t getRadius (void) const { return this->radius; }
@@ -26,11 +26,16 @@ namespace Shape {
 
         const char *getType (void) const override { return "sphere"; };
 
-        inline Shape *clone (void) const override { return new Sphere(this->getCenter(), this->getRadius()); }
+        inline Shape *clone (void) const override { return new Sphere(this->getCenter(), this->getRadius(), this->getTexture(), this->getSurface()); }
 
-        Geometry::Vec<2> param(const Geometry::Vec<3> &point) const;
-
-        bool intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals = true) const override;
+        bool intersectLine (
+            const Geometry::Line &line,
+            Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+            Pigment::Color &color_min, Pigment::Color &color_max,
+            Light::Material &material_min, Light::Material &material_max,
+            float_max_t &t_min, float_max_t &t_max,
+            bool fix_normals = true
+        ) const override;
 
     };
 

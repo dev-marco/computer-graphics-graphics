@@ -2,14 +2,23 @@
 
 namespace Shape {
 
-    bool CSGTree::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+    bool CSGTree::intersectLine (
+        const Geometry::Line &line,
+        Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+        Pigment::Color &color_min, Pigment::Color &color_max,
+        Light::Material &material_min, Light::Material &material_max,
+        float_max_t &t_min, float_max_t &t_max,
+        bool fix_normals
+    ) const {
         unsigned min_index, max_index;
         Geometry::Vec<3> shapes_normal[4];
+        Pigment::Color shapes_color[4];
+        Light::Material shapes_material[4];
         float_max_t shapes_inter[4];
         bool shapes_result[2], global_result = false;
-        shapes_result[0] = this->getFirst()->intersectLine(line, shapes_normal[0], shapes_normal[2], shapes_inter[0], shapes_inter[2], fix_normals);
+        shapes_result[0] = this->getFirst()->intersectLine(line, shapes_normal[0], shapes_normal[2], shapes_color[0], shapes_color[2], shapes_material[0], shapes_material[2], shapes_inter[0], shapes_inter[2], fix_normals);
         if (shapes_result[0] || this->getOperation() != Type::SUBTRACTION) {
-            shapes_result[1] = this->getSecond()->intersectLine(line, shapes_normal[1], shapes_normal[3], shapes_inter[1], shapes_inter[3], fix_normals);
+            shapes_result[1] = this->getSecond()->intersectLine(line, shapes_normal[1], shapes_normal[3], shapes_color[1], shapes_color[3], shapes_material[1], shapes_material[3], shapes_inter[1], shapes_inter[3], fix_normals);
             if (shapes_result[0]) {
                 if (shapes_result[1]) {
                     switch (this->getOperation()) {
@@ -53,8 +62,15 @@ namespace Shape {
         if (global_result) {
             t_min = shapes_inter[min_index];
             t_max = shapes_inter[max_index];
-            normal_min = shapes_normal[min_index];
-            normal_max = shapes_normal[max_index];
+
+            color_min = shapes_color[min_index];
+            color_max = shapes_color[max_index];
+
+            material_min = shapes_material[min_index];
+            material_max = shapes_material[max_index];
+
+            normal_min.swap(shapes_normal[min_index]);
+            normal_max.swap(shapes_normal[max_index]);
         }
         return global_result;
     }

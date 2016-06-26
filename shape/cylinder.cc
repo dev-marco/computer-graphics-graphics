@@ -1,50 +1,71 @@
 #include "../geometry/intersection.h"
+#include "../geometry/parametric.h"
 #include "cylinder.h"
 
 namespace Shape {
 
-    Geometry::Vec<2> Cylinder::param (const Geometry::Vec<3> &point) const {
-        const Geometry::Vec<3> diff = point - this->getBottom();
-        return { std::atan2(diff[1], diff[0]) / Geometry::TWO_PI, diff[2] / this->getHeight() };
-    }
-
-    bool Cylinder::intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals) const {
+    bool Cylinder::intersectLine (
+        const Geometry::Line &line,
+        Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+        Pigment::Color &color_min, Pigment::Color &color_max,
+        Light::Material &material_min, Light::Material &material_max,
+        float_max_t &t_min, float_max_t &t_max,
+        bool fix_normals
+    ) const {
 
         bool is_t_min_top_cap, is_t_min_bottom_cap, is_t_max_top_cap, is_t_max_bottom_cap;
 
         if (Geometry::Intersection::Line::Cylinder(
             line.getPoint(), line.getDirection(),
-            this->getBottom(), this->getTop(), this->getRadius(),
+            this->getBottom(), this->getDelta(), this->getHeight2(), this->getRadius(),
             t_min, is_t_min_top_cap, is_t_min_bottom_cap,
             t_max, is_t_max_top_cap, is_t_max_bottom_cap
         )) {
-            static Geometry::Vec<3> direction, delta;
-            direction = this->getDirection();
 
-            this->param(line.at(t_min));
+            const Pigment::Texture *texture = this->getTexture();
+            const Light::Surface *surface = this->getSurface();
+
+            const Geometry::Vec<3>
+                point_min = line.at(t_min),
+                point_max = line.at(t_max),
+                &cylinder_direction = this->getDirection(),
+                &cylinder_bottom = this->getBottom(),
+                &line_direction = line.getDirection();
+
+            const float_max_t &cylinder_height = this->getHeight();
+
+            const Geometry::Vec<2>
+                param_min = Geometry::Parametric::Cylinder(cylinder_bottom, cylinder_direction, cylinder_height, point_min),
+                param_max = Geometry::Parametric::Cylinder(cylinder_bottom, cylinder_direction, cylinder_height, point_max);
 
             if (is_t_min_top_cap) {
-                normal_min = direction;
+                normal_min = cylinder_direction;
             } else if (is_t_min_bottom_cap) {
-                normal_min = -direction;
+                normal_min = -cylinder_direction;
             } else {
-                delta = line.at(t_min) - this->getTop();
-                normal_min = delta - delta.dot(direction) * direction;
+                const Geometry::Vec<3> delta = point_min - cylinder_bottom;
+                normal_min = delta - delta.dot(cylinder_direction) * cylinder_direction;
             }
 
             if (is_t_max_top_cap) {
-                normal_max = direction;
+                normal_max = cylinder_direction;
             } else if (is_t_max_bottom_cap) {
-                normal_max = -direction;
+                normal_max = -cylinder_direction;
             } else {
-                delta = line.at(t_max) - this->getTop();
-                normal_max = delta - delta.dot(direction) * direction;
+                const Geometry::Vec<3> delta = point_max - cylinder_bottom;
+                normal_max = delta - delta.dot(cylinder_direction) * cylinder_direction;
             }
 
             if (fix_normals) {
-                normal_min.oppose(line.getDirection());
-                normal_max.oppose(line.getDirection());
+                normal_min.oppose(line_direction);
+                normal_max.oppose(line_direction);
             }
+
+            color_min = texture->at(param_min, point_min);
+            material_min = surface->at(param_min, point_min);
+
+            color_max = texture->at(param_max, point_max);
+            material_max = surface->at(param_max, point_max);
 
             return true;
         }

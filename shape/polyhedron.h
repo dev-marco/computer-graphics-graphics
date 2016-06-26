@@ -1,5 +1,5 @@
-#ifndef MODULE_GRAPHICS_GEOMETRY_POLYHEDRON_H_
-#define MODULE_GRAPHICS_GEOMETRY_POLYHEDRON_H_
+#ifndef MODULE_GRAPHICS_SHAPE_POLYHEDRON_H_
+#define MODULE_GRAPHICS_SHAPE_POLYHEDRON_H_
 
 #include <vector>
 #include "../geometry/plane.h"
@@ -13,8 +13,8 @@ namespace Shape {
 
     public:
 
-        Polyhedron (const std::vector<Geometry::Plane> &_planes) :
-            planes(_planes) {}
+        Polyhedron (const std::vector<Geometry::Plane> &_planes, Pigment::Texture *_texture, Light::Surface *_surface) :
+            Shape(_texture, _surface), planes(_planes) {}
 
         const std::vector<Geometry::Plane> &getPlanes (void) const { return this->planes; }
 
@@ -27,9 +27,16 @@ namespace Shape {
 
         const char *getType (void) const override { return "polyhedron"; }
 
-        inline Shape *clone (void) const override { return new Polyhedron(this->getPlanes()); }
+        inline Shape *clone (void) const override { return new Polyhedron(this->getPlanes(), this->getTexture(), this->getSurface()); }
 
-        bool intersectLine (const Geometry::Line &line, Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max, float_max_t &t_min, float_max_t &t_max, bool fix_normals = true) const override;
+        bool intersectLine (
+            const Geometry::Line &line,
+            Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+            Pigment::Color &color_min, Pigment::Color &color_max,
+            Light::Material &material_min, Light::Material &material_max,
+            float_max_t &t_min, float_max_t &t_max,
+            bool fix_normals = true
+        ) const override;
 
     };
 
