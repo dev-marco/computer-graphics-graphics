@@ -5,10 +5,17 @@
 
 #include "pigment/bitmap.h"
 #include "pigment/color.h"
-#include "pigment/image.h"
+#include "pigment/perlin_noise.h"
 #include "pigment/procedural.h"
 #include "pigment/solid.h"
+#include "pigment/texmap.h"
 #include "pigment/texture.h"
+
+#include "light/light.h"
+#include "light/material.h"
+#include "light/property.h"
+#include "light/solid.h"
+#include "light/surface.h"
 
 #include "shape/box.h"
 #include "shape/csg_tree.h"
