@@ -21,7 +21,7 @@ namespace Pigment {
         ) :
             Texture(_s_size, _t_size, _s_offset, _t_offset), procedure(_procedure) {}
 
-        inline Color at (const Geometry::Vec<2> &param) const override {
+        inline Color at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const override {
             return this->procedure({
                 param[0] * this->getInverseSSize() + this->getSOffset(),
                 param[1] * this->getInverseTSize() + this->getTOffset()

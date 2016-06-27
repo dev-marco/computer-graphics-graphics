@@ -23,7 +23,7 @@ namespace Pigment {
 
         const cv::Mat &getImage (void) const { return this->image; }
 
-        inline Color at (const Geometry::Vec<2> &param) const override {
+        inline Color at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const override {
             const cv::Mat &image = this->getImage();
             const Geometry::Vec<2> &param_norm = {
                 param[0] * this->getInverseSSize() + this->getSOffset(),

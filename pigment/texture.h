@@ -34,8 +34,7 @@ namespace Pigment {
         void setSSize (const float_max_t &_s_size) { this->s_size = _s_size, this->inv_s_size = 1.0 / _s_size; }
         void setTSize (const float_max_t &_t_size) { this->t_size = _t_size, this->inv_t_size = 1.0 / _t_size; }
 
-        virtual Color at (const Geometry::Vec<2> &param) const = 0;
-        virtual Color at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const { return this->at(param); }
+        virtual Color at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const = 0;
 
         inline virtual bool needParameter (void) const { return true; }
 

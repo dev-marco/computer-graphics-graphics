@@ -15,7 +15,7 @@ namespace Pigment {
 
         inline const Color &getColor (void) const { return this->color; }
 
-        inline Color at (const Geometry::Vec<2> &param) const override { return this->getColor(); }
+        inline Color at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const override { return this->getColor(); }
 
         inline bool needParameter (void) const override { return false; }
     };
