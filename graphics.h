@@ -23,6 +23,6 @@
 #include "shape/polyhedron.h"
 #include "shape/shape.h"
 #include "shape/sphere.h"
-#include "shape/transformed_shape.h"
+#include "shape/transformed.h"
 
 #endif
