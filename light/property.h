@@ -15,6 +15,8 @@ namespace Light {
 
         virtual std::array<float_max_t, SIZE> at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const = 0;
 
+        virtual bool needParameter (void) const { return true; }
+
     };
 
 };

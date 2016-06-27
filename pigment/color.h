@@ -35,6 +35,8 @@ namespace Pigment {
         inline float_max_t blue (void) const { return (*this)[2]; }
         inline float_max_t alpha (void) const { return (*this)[3]; }
 
+        inline Color intervalFixed (void) { return this->allClamped(0.0, 1.0); }
+
     };
 
 };

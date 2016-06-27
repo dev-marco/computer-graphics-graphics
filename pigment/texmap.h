@@ -18,6 +18,8 @@ namespace Pigment {
             return TEXT::at({ this->P0.dot({ point[0], point[1], point[2], 1.0 }), this->P1.dot({ point[0], point[1], point[2], 1.0 }) });
         }
 
+        inline bool needParameter (void) const override { return false; }
+
     };
 }
 

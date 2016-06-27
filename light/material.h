@@ -37,6 +37,7 @@ namespace Light {
         inline const float_max_t &getReflect (void) const { return this->reflect; }
         inline const float_max_t &getTransmit (void) const { return this->transmit; }
         inline const float_max_t &getIOR (void) const { return this->ior; }
+        inline const Geometry::Vec<3> &getNormal (void) const { return this->normal; }
 
         inline void setAmbient (const float_max_t &_ambient) { this->ambient = _ambient; }
         inline void setDiffuse (const float_max_t &_diffuse) { this->diffuse = _diffuse; }
@@ -45,6 +46,7 @@ namespace Light {
         inline void setReflect (const float_max_t &_reflect) { this->reflect = _reflect; }
         inline void setTransmit (const float_max_t &_transmit) { this->transmit = _transmit; }
         inline void setIOR (const float_max_t &_ior) { this->ior = _ior; }
+        inline void setNormal (const Geometry::Vec<3> &_normal) { this->normal = _normal; }
 
     };
 

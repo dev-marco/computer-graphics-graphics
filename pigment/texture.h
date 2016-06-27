@@ -37,6 +37,8 @@ namespace Pigment {
         virtual Color at (const Geometry::Vec<2> &param) const = 0;
         virtual Color at (const Geometry::Vec<2> &param, const Geometry::Vec<3> &point) const { return this->at(param); }
 
+        inline virtual bool needParameter (void) const { return true; }
+
     };
 
 };
