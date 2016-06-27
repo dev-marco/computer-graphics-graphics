@@ -1,10 +1,10 @@
-#include "transformed_shape.h"
+#include "transformed.h"
 
 namespace Shape {
 
-    constexpr std::array<float_max_t, 16> TransformedShape::identity;
+    constexpr std::array<float_max_t, 16> Transformed::identity;
 
-    void TransformedShape::makeInverse (void) {
+    void Transformed::makeInverse (void) {
 
         const std::array<float_max_t, 16> &m = this->getMatrix();
 
@@ -115,7 +115,7 @@ namespace Shape {
         }
     }
 
-    void TransformedShape::makeTransposed (void) {
+    void Transformed::makeTransposed (void) {
         const std::array<float_max_t, 16> inv = this->getMatrixInverse();
         this->inv_trans_matrix = {
             inv[0], inv[4], inv[8], inv[12],
@@ -125,7 +125,7 @@ namespace Shape {
         };
     }
 
-    void TransformedShape::multiplyMatrix (const std::array<float_max_t, 16> &other) {
+    void Transformed::multiplyMatrix (const std::array<float_max_t, 16> &other) {
         std::array<float_max_t, 16> result;
         bool not_identity = false;
         for (unsigned i = 0; i < 16; ++i) {
@@ -154,7 +154,7 @@ namespace Shape {
         }
     }
 
-    void TransformedShape::setShape (const Shape *_shape) {
+    void Transformed::setShape (const Shape *_shape) {
         if (this->shape) {
             delete this->shape;
             this->shape = nullptr;
@@ -164,7 +164,7 @@ namespace Shape {
         }
     }
 
-    void TransformedShape::scale (float_max_t sx, float_max_t sy, float_max_t sz) {
+    void Transformed::scale (float_max_t sx, float_max_t sy, float_max_t sz) {
         if (sx != 1.0 || sy != 1.0 || sz != 1.0) {
             this->multiplyMatrix({
                  sx, 0.0, 0.0, 0.0,
@@ -175,7 +175,7 @@ namespace Shape {
         }
     }
 
-    void TransformedShape::shear (float_max_t sxy, float_max_t sxz, float_max_t syx, float_max_t syz, float_max_t szx, float_max_t szy) {
+    void Transformed::shear (float_max_t sxy, float_max_t sxz, float_max_t syx, float_max_t syz, float_max_t szx, float_max_t szy) {
         if (sxy != 0.0 || sxz != 0.0 || syx != 0.0 || syz != 0.0 || szx != 0.0 || szy != 0.0) {
             this->multiplyMatrix({
                 1.0, sxy, sxz, 0.0,
@@ -186,13 +186,13 @@ namespace Shape {
         }
     }
 
-    void TransformedShape::rotate (const Geometry::Quaternion &quat) {
+    void Transformed::rotate (const Geometry::Quaternion &quat) {
         if (!quat.isIdentity()) {
             this->multiplyMatrix(quat.rotation());
         }
     }
 
-    void TransformedShape::translate (const Geometry::Vec<3> &vec) {
+    void Transformed::translate (const Geometry::Vec<3> &vec) {
         if (vec) {
             this->multiplyMatrix({
                 1.0,       0.0,    0.0, 0.0,
@@ -203,30 +203,35 @@ namespace Shape {
         }
     }
 
-    const Shape *TransformedShape::boundingVolume (void) const {
+    const Shape *Transformed::boundingVolume (void) const {
         const Shape *bound = shape->boundingVolume();
         if (bound == this->getShape()) {
             return this;
         }
-        return new TransformedShape(
+        return new Transformed(
             bound, this->getPivot(),
             this->getTexture(), this->getSurface(),
             this->getMatrix(), this->getMatrixInverse(), this->getMatrixInverseTransposed());
     }
 
-    bool TransformedShape::intersectLine (
+    bool Transformed::intersectLine (
         const Geometry::Line &line,
-        Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
-        Pigment::Color &color_min, Pigment::Color &color_max,
-        Light::Material &material_min, Light::Material &material_max,
         float_max_t &t_min, float_max_t &t_max,
-        bool fix_normals
+        bool get_info,
+        Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+        bool &inside_min, bool &inside_max,
+        Pigment::Color &color_min, Pigment::Color &color_max,
+        Light::Material &material_min, Light::Material &material_max
     ) const {
         static Geometry::Line transf_line;
         transf_line = Geometry::Line(line.getPoint().transformed(this->getMatrixInverse(), this->getPivot()), line.getDirection().transformedNormal(this->getMatrixInverse()));
-        if (this->getShape()->intersectLine(transf_line, normal_min, normal_max, color_min, color_max, material_min, material_max, t_min, t_max, fix_normals)) {
-            normal_min.transform(this->getMatrixInverseTransposed());
-            normal_max.transform(this->getMatrixInverseTransposed());
+        if (this->getShape()->intersectLine(transf_line, t_min, t_max, get_info, normal_min, normal_max, inside_min, inside_max, color_min, color_max, material_min, material_max)) {
+
+            if (get_info) {
+                normal_min.transform(this->getMatrixInverseTransposed());
+                normal_max.transform(this->getMatrixInverseTransposed());
+            }
+
             return true;
         }
         return false;

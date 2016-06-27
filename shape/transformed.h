@@ -6,7 +6,7 @@
 
 namespace Shape {
 
-    class TransformedShape : public Shape {
+    class Transformed : public Shape {
 
         Shape *shape;
         std::array<float_max_t, 16> matrix, inv_matrix, inv_trans_matrix;
@@ -17,7 +17,7 @@ namespace Shape {
 
         inline void updateMatrixes (void) { this->makeInverse(), this->makeTransposed(); }
 
-        TransformedShape (
+        Transformed (
             const Shape *_shape, const Geometry::Vec<3> &_pivot,
             Pigment::Texture *_texture, Light::Surface *_surface,
             const std::array<float_max_t, 16> &_matrix,
@@ -35,7 +35,7 @@ namespace Shape {
             0.0, 0.0, 0.0, 1.0
         };
 
-        TransformedShape (
+        Transformed (
             const Shape *_shape = nullptr,
             const Geometry::Vec<3> &_pivot = Geometry::Vec<3>::origin,
             Pigment::Texture *_texture = nullptr,
@@ -64,9 +64,9 @@ namespace Shape {
 
         const Shape *boundingVolume(void) const override;
 
-        inline const char *getType (void) const override { return "transformed_shape"; }
+        inline const char *getType (void) const override { return "transformed"; }
 
-        inline Shape *clone (void) const override { return new TransformedShape(
+        inline Shape *clone (void) const override { return new Transformed(
             this->getShape(), this->getPivot(),
             this->getTexture(), this->getSurface(),
             this->getMatrix(), this->getMatrixInverse(),
@@ -75,11 +75,12 @@ namespace Shape {
 
         bool intersectLine (
             const Geometry::Line &line,
-            Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
-            Pigment::Color &color_min, Pigment::Color &color_max,
-            Light::Material &material_min, Light::Material &material_max,
             float_max_t &t_min, float_max_t &t_max,
-            bool fix_normals = true
+            bool get_info,
+            Geometry::Vec<3> &normal_min, Geometry::Vec<3> &normal_max,
+            bool &inside_min, bool &inside_max,
+            Pigment::Color &color_min, Pigment::Color &color_max,
+            Light::Material &material_min, Light::Material &material_max
         ) const override;
 
     };
