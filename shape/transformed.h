@@ -8,7 +8,7 @@ namespace Shape {
 
     class Transformed : public Shape {
 
-        Shape *shape;
+        const Shape *shape;
         std::array<float_max_t, 16> matrix, inv_matrix, inv_trans_matrix;
         Geometry::Vec<3> pivot;
 

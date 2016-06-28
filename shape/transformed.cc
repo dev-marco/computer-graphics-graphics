@@ -224,8 +224,14 @@ namespace Shape {
         Light::Material &material_min, Light::Material &material_max
     ) const {
         static Geometry::Line transf_line;
-        transf_line = Geometry::Line(line.getPoint().transformed(this->getMatrixInverse(), this->getPivot()), line.getDirection().transformedNormal(this->getMatrixInverse()));
+        const Geometry::Vec<3>
+            &line_point = line.getPoint(),
+            &line_direction = line.getDirection();
+        transf_line = Geometry::Line(line_point.transformed(this->getMatrixInverse(), this->getPivot()), line_direction.transformedNormal(this->getMatrixInverse()));
         if (this->getShape()->intersectLine(transf_line, t_min, t_max, get_info, normal_min, normal_max, inside_min, inside_max, color_min, color_max, material_min, material_max)) {
+
+            t_min = line.param(transf_line.at(t_min).transformed(this->getMatrix()));
+            t_max = line.param(transf_line.at(t_max).transformed(this->getMatrix()));
 
             if (get_info) {
                 normal_min.transform(this->getMatrixInverseTransposed());
