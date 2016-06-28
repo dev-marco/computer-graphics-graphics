@@ -35,12 +35,15 @@ namespace Shape {
                     &cylinder_bottom = this->getBottom(),
                     &line_direction = line.getDirection();
 
-                const float_max_t &cylinder_height = this->getHeight();
                 Geometry::Vec<2> param_min, param_max;
 
                 if (texture->needParameter() || surface->needParameter()) {
-                    param_min = Geometry::Parametric::Cylinder(cylinder_bottom, cylinder_direction, cylinder_height, point_min),
-                    param_max = Geometry::Parametric::Cylinder(cylinder_bottom, cylinder_direction, cylinder_height, point_max);
+                    const float_max_t
+                        &cylinder_height = this->getHeight(),
+                        &cylinder_radius = this->getRadius();
+
+                    param_min = Geometry::Parametric::Cylinder(cylinder_bottom, cylinder_direction, cylinder_height, cylinder_radius, point_min);
+                    param_max = Geometry::Parametric::Cylinder(cylinder_bottom, cylinder_direction, cylinder_height, cylinder_radius, point_max);
                 }
 
                 if (is_t_min_top_cap) {
@@ -49,7 +52,7 @@ namespace Shape {
                     normal_min = -cylinder_direction;
                 } else {
                     const Geometry::Vec<3> delta = point_min - cylinder_bottom;
-                    normal_min = delta - delta.dot(cylinder_direction) * cylinder_direction;
+                    normal_min = (delta - delta.dot(cylinder_direction) * cylinder_direction).normalized();
                 }
 
                 if (is_t_max_top_cap) {
