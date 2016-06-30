@@ -21,7 +21,7 @@ namespace Pigment {
         Color (const cv::Vec3b &_vec) :
             Geometry::Vec<4>({ _vec[2] / 255.0, _vec[1] / 255.0, _vec[0] / 255.0, 1.0 }) {}
 
-        operator cv::Vec3b (void) const { return {
+        inline operator cv::Vec3b (void) const { return {
             static_cast<unsigned char>(this->blue() * 255.0),
             static_cast<unsigned char>(this->green() * 255.0),
             static_cast<unsigned char>(this->red() * 255.0)
